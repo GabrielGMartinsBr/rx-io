@@ -28,16 +28,26 @@ add_executable(${APP} ${source_files})
 target_include_directories(${APP} PUBLIC src)
 
 
-# ----------------------------------------------------------------------
-#    MRuby
-#
-find_package(MRuby REQUIRED)
+# # ----------------------------------------------------------------------
+# #    MRuby
+# #
+# find_package(MRuby REQUIRED)
 
-if (MRUBY_FOUND)
-    message(STATUS "MRuby found!")
-    target_include_directories(${APP} PRIVATE ${MRUBY_INCLUDE_DIR})
-    target_link_libraries(${APP} PRIVATE ${MRUBY_LIBRARIES})
-else()
-    message(FATAL_ERROR "MRuby not found!")
-endif()
+# if (MRUBY_FOUND)
+#     message(STATUS "MRuby found!")
+#     target_include_directories(${APP} PRIVATE ${MRUBY_INCLUDE_DIR})
+#     target_link_libraries(${APP} PRIVATE ${MRUBY_LIBRARIES})
+# else()
+#     message(FATAL_ERROR "MRuby not found!")
+# endif()
+# # ----------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------
+#    Ruby
+#
+find_package(RubyStatic REQUIRED)
+target_include_directories(${APP} PRIVATE ${RubyStatic_INCLUDE_DIRS})
+target_link_libraries(${APP} ${RubyStatic_LIBRARIES} -lcrypt)
+target_compile_options(${APP} PRIVATE -Wno-register)
 # ----------------------------------------------------------------------

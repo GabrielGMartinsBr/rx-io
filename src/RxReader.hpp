@@ -1,60 +1,71 @@
 #pragma once
 
-#include <mruby.h>
-#include <mruby/compile.h>
-#include <mruby/variable.h>
+#include <ruby.h>
 
 #include <iostream>
-#include <stdexcept>
+#include <ostream>
 #include <string>
 
 #include "./FileIO.hpp"
+#include "./It_Table.hpp"
+
+typedef VALUE (*Cb)(VALUE);
 
 class RxReader {
 
  public:
 
-  static void read(mrb_state* mrb, const char* filePath)
+  static void read(const char* filePath)
   {
     // std::cout << "Reading file..." << std::endl;
+
     std::string content = FileIO::readFile(filePath);
+    VALUE rb_content = rb_str_new(content.c_str(), content.size());
 
-    // const char* ruby_code = "Marshal.load($data)";
+    VALUE rb_result = marshalLoadProtect(rb_content);
+    // VALUE rb_result = marshalLoad(rb_content);
+    // rb_p(rb_result);
 
-    mrb_sym varName = mrb_intern_lit(mrb, "$data");
-    mrb_value varContent = mrb_str_new_cstr(mrb, content.c_str());
-    mrb_gv_set(mrb, varName, varContent);
+    VALUE varsArr = rb_obj_instance_variables(rb_result);
+    rb_p(varsArr);
 
-    // mrb_load_string(mrb, "puts $data");
+    VALUE rb_data = rb_iv_get(rb_result, "@data");
+    Eng::Table* t = It::Table::getObjectValue(rb_data);
 
-    // mrb_gv_set(mrb, mrb_intern_cstr(mrb, "$data"), ruby_string);
-
-    const char* ruby_code = "Marshal.load($data)";
-    mrb_value result = mrb_load_string(mrb, ruby_code);
-
-    std::cout << "exc: " << mrb->exc << std::endl;
-    if (mrb->exc) {
-      mrb_print_error(mrb);
-      throw std::runtime_error("Mrb Error!");
-    }
-
-    // mrb_p(mrb, ruby_string);
+    Log::out() << t->getValue(1);
   }
 
-  static void marshalLoad(const std::string& content)
+  static VALUE marshalLoad(VALUE str)
   {
-    mrb_state* mrb = mrb_open();
-    if (!mrb) { /* handle error */
+    VALUE obj = rb_marshal_load(str);
+    VALUE errorMsg = rb_gv_get("$!");
+    if (errorMsg != Qnil) {
+      rb_p(errorMsg);
+      throw std::runtime_error("Marshal load failed.");
     }
+    return obj;
+  }
 
-    mrb_value ruby_string = mrb_str_new_cstr(mrb, content.c_str());
+  static VALUE marshalLoadProtect(VALUE str)
+  {
+    int error;
+    VALUE result = rb_protect((Cb)RUBY_METHOD_FUNC(rb_marshal_load), str, &error);
+    if (error) {
+      VALUE error_message = rb_gv_get("$!");
+      rb_p(error_message);
+      std::exit(1);
+    }
+    return result;
+  }
 
-    const char* ruby_code = "Marshal.load($data)";
-
-    // mrb_gv_set(mrb, mrb_intern_cstr(mrb, "$data"), ruby_string);
-
-    // mrb_value result = mrb_load_string(mrb, ruby_code);
-
-    // const char* ruby_code = "Marshal.load($data)";
+  static void require(const char* c)
+  {
+    int error;
+    VALUE res = rb_protect((Cb)RUBY_METHOD_FUNC(rb_require), (VALUE)c, &error);
+    if (error) {
+      VALUE error_message = rb_gv_get("$!");
+      rb_p(error_message);
+      std::exit(1);
+    }
   }
 };
