@@ -4,10 +4,12 @@
 
 #include <iostream>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 
 #include "./FileIO.hpp"
 #include "./It_Table.hpp"
+#include "./MapParser.hpp"
 
 typedef VALUE (*Cb)(VALUE);
 
@@ -17,22 +19,16 @@ class RxReader {
 
   static void read(const char* filePath)
   {
-    // std::cout << "Reading file..." << std::endl;
-
     std::string content = FileIO::readFile(filePath);
-    VALUE rb_content = rb_str_new(content.c_str(), content.size());
+    VALUE rbContent = rb_str_new(content.c_str(), content.size());
 
-    VALUE rb_result = marshalLoadProtect(rb_content);
-    // VALUE rb_result = marshalLoad(rb_content);
-    // rb_p(rb_result);
+    VALUE rbResult = marshalLoadProtect(rbContent);
+    // VALUE rbResult = marshalLoad(rb_content);
 
-    VALUE varsArr = rb_obj_instance_variables(rb_result);
-    rb_p(varsArr);
+    // rb_p(rbResult);
+    MapParser::parserTileset(rbResult);
 
-    VALUE rb_data = rb_iv_get(rb_result, "@data");
-    Eng::Table* t = It::Table::getObjectValue(rb_data);
-
-    Log::out() << t->getValue(1);
+    // MapParser::readMap(rbResult);
   }
 
   static VALUE marshalLoad(VALUE str)

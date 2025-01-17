@@ -8,7 +8,8 @@
 
 // const char *inputPath = "/home/gabriel/gabrielmartins.dev/dev/cpp/orm-xp/projects/Project1/Data/Map002.rxdata";
 // const char *inputPath = "/home/gabriel/gabrielmartins.dev/dev/cpp/orm-xp/projects/Project1/Data/Scripts.rxdata";
-const char *inputPath = "/home/gabriel/gabrielmartins.dev/dev/cpp/orm-xp/projects/Project1/Data/Map001.rxdata";
+// const char *inputPath = "/home/gabriel/gabrielmartins.dev/dev/cpp/orm-xp/projects/Project1/Data/Map001.rxdata";
+const char *inputPath = "/home/gabriel/gabrielmartins.dev/dev/cpp/orm-xp/projects/Project1/Data/Tilesets.rxdata";
 
 void log(const char *data)
 {
