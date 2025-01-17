@@ -20,7 +20,7 @@ find_path(MRUBY_INCLUDE_DIR
 find_library(MRUBY_LIBRARIES
     NAMES mruby mruby_core
     PATHS
-        ${MRubyLibDir}/lib
+        ${MRubyLibDir}/build/host/lib
         ENV PATH
     NO_DEFAULT_PATH
 )
