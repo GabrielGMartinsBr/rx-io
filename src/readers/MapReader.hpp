@@ -1,19 +1,30 @@
+#pragma once
+
 #include <ruby.h>
 
 #include <nlohmann/json.hpp>
 
 #include "Convert.hpp"
-#include "It_Table.hpp"
+#include "FileIO.hpp"
 #include "Log.hpp"
-#include "RbUtils.hpp"
-#include "Table.hpp"
+#include "MarshalUtils.hpp"
+#include "StrUtils.hpp"
+#include "rbx/It_Table.hpp"
 
 using json = nlohmann::json;
 
-class MapParser {
- public:
+struct MapReader {
+  static void read(const char* filePath)
+  {
+    Str content = FileIO::readFile(filePath);
+    VALUE rbContent = rb_str_new(content.c_str(), content.size());
 
-  static void readMap(VALUE rbMapObj)
+    VALUE rbResult = MarshalUtils::load(rbContent);
+
+    parse(rbResult);
+  }
+
+  static void parse(VALUE rbMapObj)
   {
     VALUE rbClassName = rb_class_name(rb_class_of(rbMapObj));
 
@@ -51,32 +62,5 @@ class MapParser {
     std::string strData = mapObj.dump();
 
     Log::out() << strData;
-  }
-
-  static void parserTileset(VALUE tilesets)
-  {
-    int size = RbUtils::getArraySize(tilesets);
-    Log::out() << size;
-
-    for (int i = 0; i < size; i++) {
-      VALUE entry = rb_ary_entry(tilesets, i);
-      if (entry == Qnil) continue;
-      // rb_p(entry);
-      // printInstanceVarNames(entry);
-      VALUE rbValue = rb_iv_get(entry, "@tileset_name");
-      const char* value = Convert::toCStr(rbValue);
-      Log::out() << "[" << i << "]: " << value;
-    }
-  }
-
-  static void printInstanceVarNames(VALUE rbObj)
-  {
-    VALUE varsArr = rb_obj_instance_variables(rbObj);
-    rb_p(varsArr);
-  }
-
-  static void printInstanceVar(VALUE rbInst, const char* name)
-  {
-    rb_p(rb_iv_get(rbInst, name));
   }
 };

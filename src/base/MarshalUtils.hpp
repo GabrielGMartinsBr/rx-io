@@ -1,9 +1,25 @@
 #pragma once
 
+#include <ruby.h>
+
 #include <cstdint>
 #include <cstring>
 
+typedef VALUE (*Cb)(VALUE);
+
 struct MarshalUtils {
+  static VALUE load(VALUE str)
+  {
+    int error;
+    VALUE result = rb_protect((Cb)RUBY_METHOD_FUNC(rb_marshal_load), str, &error);
+    if (error) {
+      VALUE error_message = rb_gv_get("$!");
+      rb_p(error_message);
+      std::exit(1);
+    }
+    return result;
+  }
+
   static inline int readInt32(const char **data)
   {
     int32_t result;

@@ -25,7 +25,7 @@ file(GLOB_RECURSE source_files src/*.cpp src/*.hpp)
 add_executable(${APP} ${source_files})
 
 # Include directories
-target_include_directories(${APP} PUBLIC src)
+target_include_directories(${APP} PUBLIC src src/base)
 
 
 # # ----------------------------------------------------------------------

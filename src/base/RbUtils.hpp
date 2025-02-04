@@ -4,10 +4,21 @@
 
 #include <stdexcept>
 
-#include "./AppDefs.h"
-#include "./Convert.hpp"
+#include "AppDefs.h"
+#include "Convert.hpp"
 
 struct RbUtils {
+  static void printInstanceVarNames(VALUE rbObj)
+  {
+    VALUE varsArr = rb_obj_instance_variables(rbObj);
+    rb_p(varsArr);
+  }
+
+  static void printInstanceVar(VALUE rbInst, const char* name)
+  {
+    rb_p(rb_iv_get(rbInst, name));
+  }
+
   static VALUE createRbString(app::String& str)
   {
     VALUE rbStr = rb_str_new(str.c_str(), str.size());

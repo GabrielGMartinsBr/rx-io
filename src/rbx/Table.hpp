@@ -4,9 +4,9 @@
 
 #include <stdexcept>
 
-#include "./AppDefs.h"
-#include "./Log.hpp"
-#include "./MarshalUtils.hpp"
+#include "AppDefs.h"
+#include "Log.hpp"
+#include "MarshalUtils.hpp"
 
 namespace Eng {
 
